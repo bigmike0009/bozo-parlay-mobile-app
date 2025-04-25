@@ -5,9 +5,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        headerStyle: { backgroundColor: '#f4f4f4' },
+        tabBarActiveTintColor: '#6200ee',
+        headerStyle: { backgroundColor: '#ffffff' },
         headerTitleStyle: { color: '#000' },
+        tabBarStyle: { paddingBottom: 8 },
       }}>
       <Tabs.Screen
         name="index"
@@ -28,6 +29,13 @@ export default function TabLayout() {
         options={{
           title: 'My Groups',
           tabBarIcon: ({ color }) => <FontAwesome name="users" size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="groupfinder"
+        options={{
+          title: 'Find Groups',
+          tabBarIcon: ({ color }) => <FontAwesome name="search" size={24} color={color} />,
         }}
       />
     </Tabs>
