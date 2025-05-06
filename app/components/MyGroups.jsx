@@ -2,22 +2,23 @@ import React, {useState} from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text, Card, Button } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { mockGroups } from '../mockData/mock';
 
 export default function MyGroups() {
   const router = useRouter();
-  const [myGroups, setMyGroups] = useState([]);
+  const [myGroups, setMyGroups] = useState(mockGroups.filter(group => group.isMember));
 
   const renderGroup = ({ item }) => (
-    <Card style={styles.card} onPress={() => router.push(`/group/${item.id}`)}>
+    <Card style={styles.card} onPress={() => router.push(`/groups/group/${item.id}`)}>
       <Card.Content>
         <Text variant="titleLarge">{item.name}</Text>
-        <Text variant="bodyMedium">Members: {item.memberCount}</Text>
+        <Text variant="bodyMedium">Members: {item.memberCount}/{item.maxMembers}</Text>
         <Text variant="bodyMedium">Pick Due: {item.pickDueDay}</Text>
         <Text variant="bodyMedium">Bet Amount: ${item.betAmount}</Text>
         <View style={styles.stats}>
           <Text variant="bodySmall">Wins: {item.wins}</Text>
           <Text variant="bodySmall">Losses: {item.losses}</Text>
-          <Text variant="bodySmall">Bozo Count: {item.bozoCount}</Text>
+          <Text variant="bodySmall">Bozo Count: {item.bozoCount || 0}</Text>
         </View>
       </Card.Content>
     </Card>

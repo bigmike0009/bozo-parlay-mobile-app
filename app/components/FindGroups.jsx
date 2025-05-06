@@ -2,58 +2,34 @@ import React, { useState } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Text, Card, Button, Searchbar } from 'react-native-paper';
 import { useRouter } from 'expo-router';
+import { mockGroups } from '../mockData/mock';
 
 export default function FindGroups() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [availableGroups, setAvailableGroups] = useState([]);
+  const [availableGroups, setAvailableGroups] = useState(mockGroups.filter(group => !group.isMember));
 
-  const isUserInGroup = (groupId) => {
-    // Check if user is already a member of this group
-    return false; // Replace with actual logic
-  };
-
-  const renderGroup = ({ item }) => {
-    const isMember = isUserInGroup(item.id);
-
-    return (
-      <Card style={styles.card}>
-        <Card.Content>
-          <Text variant="titleLarge">{item.name}</Text>
-          <Text variant="bodyMedium">Members: {item.memberCount}</Text>
-          <Text variant="bodyMedium">Pick Due: {item.pickDueDay}</Text>
-          <Text variant="bodyMedium">Bet Amount: ${item.betAmount}</Text>
-          <View style={styles.stats}>
-            <Text variant="bodySmall">Wins: {item.wins}</Text>
-            <Text variant="bodySmall">Losses: {item.losses}</Text>
-          </View>
-          {!isMember && (
-            <Button 
-              mode="contained" 
-              onPress={() => handleJoinGroup(item.id)}
-              style={styles.joinButton}
-            >
-              Join Group
-            </Button>
-          )}
-          {isMember && (
-            <Button 
-              mode="outlined" 
-              onPress={() => router.push(`/group/${item.id}`)}
-              style={styles.viewButton}
-            >
-              View Group
-            </Button>
-          )}
-        </Card.Content>
-      </Card>
-    );
-  };
-
-  const handleJoinGroup = async (groupId) => {
-    // Handle joining group logic
-    console.log('Joining group:', groupId);
-  };
+  const renderGroup = ({ item }) => (
+    <Card style={styles.card} onPress={() => router.push(`/groups/group/${item.id}`)}>
+      <Card.Content>
+        <Text variant="titleLarge">{item.name}</Text>
+        <Text variant="bodyMedium">Members: {item.memberCount}/{item.maxMembers}</Text>
+        <Text variant="bodyMedium">Pick Due: {item.pickDueDay}</Text>
+        <Text variant="bodyMedium">Bet Amount: ${item.betAmount}</Text>
+        <View style={styles.stats}>
+          <Text variant="bodySmall">Wins: {item.wins}</Text>
+          <Text variant="bodySmall">Losses: {item.losses}</Text>
+        </View>
+        <Button 
+          mode="contained" 
+          onPress={() => router.push(`/groups/group/${item.id}`)}
+          style={styles.viewButton}
+        >
+          View Group
+        </Button>
+      </Card.Content>
+    </Card>
+  );
 
   return (
     <View style={styles.container}>

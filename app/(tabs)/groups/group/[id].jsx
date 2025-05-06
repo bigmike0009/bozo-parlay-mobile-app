@@ -1,56 +1,32 @@
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
 import { Card, Text, Button, Avatar, Chip, List, Surface, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const mockGroup = {
-  id: '1',
-  name: 'The Parlay Kings',
-  description: 'Daily parlays with strict rules and high rewards',
-  maxMembers: 20,
-  currentMembers: 15,
-  isPrivate: true,
-  betSize: 50,
-  frequency: 'daily',
-  lockInTime: '7:00 PM EST',
-  betWindow: '24h',
-  minOdds: 1.5,
-  maxOdds: 10,
-  chatType: 'discord',
-  leader: 'John Doe',
-  admins: ['Jane Smith', 'Bob Wilson'],
-  members: Array(15).fill().map((_, i) => ({
-    name: `Member ${i + 1}`,
-    role: i < 3 ? 'admin' : 'member',
-    wins: Math.floor(Math.random() * 50),
-    losses: Math.floor(Math.random() * 20)
-  })),
-  nextPick: {
-    due: '2024-01-20T19:00:00',
-    picker: 'Jane Smith'
-  }
-};
+import { mockGroups } from '../../../mockData/mock';
 
 export default function GroupDetail() {
   const { id } = useLocalSearchParams();
   const theme = useTheme();
-  const isMember = true; // This would come from your auth context
+  const router = useRouter();
+
+  const group = mockGroups.find(group => group.id === id) || {};
+  const isMember = group.isMember;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Stack.Screen 
         options={{
-          headerTitle: mockGroup.name,
+          headerTitle: group.name || 'Group Details',
           headerBackTitle: 'Back'
         }}
       />
       <ScrollView>
         <Surface style={{ margin: 16, padding: 16, elevation: 2, borderRadius: 8 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Avatar.Text size={60} label={mockGroup.name.substring(0, 2)} />
+            <Avatar.Text size={60} label={group.name?.substring(0, 2) || 'NA'} />
             <View style={{ flex: 1, marginLeft: 16 }}>
-              <Text variant="titleLarge">{mockGroup.name}</Text>
-              <Text variant="bodyMedium">{mockGroup.description}</Text>
+              <Text variant="titleLarge">{group.name}</Text>
+              <Text variant="bodyMedium">{group.description}</Text>
             </View>
           </View>
 
@@ -59,22 +35,21 @@ export default function GroupDetail() {
               <Card style={{ marginBottom: 16 }}>
                 <Card.Content>
                   <Text variant="titleMedium">Next Pick Due</Text>
-                  <Text variant="bodyLarge">{new Date(mockGroup.nextPick.due).toLocaleString()}</Text>
-                  <Text>Picker: {mockGroup.nextPick.picker}</Text>
+                  <Text variant="bodyLarge">{group.pickDueDay}</Text>
                 </Card.Content>
               </Card>
 
               <Button 
                 mode="contained" 
-                onPress={() => {}} 
+                onPress={() => router.push(`/groups/group/parlay/parlay-picks?id=${id}`)} 
                 style={{ marginBottom: 8 }}>
-                Make Pick
+                View/Edit Parlay Picks
               </Button>
               <Button 
                 mode="outlined" 
-                onPress={() => {}} 
+                onPress={() => router.push(`/groups/group/make/make-pick?id=${id}`)} 
                 style={{ marginBottom: 8 }}>
-                Open Chat
+                Make Pick
               </Button>
             </View>
           ) : (
@@ -90,34 +65,36 @@ export default function GroupDetail() {
             <Text variant="titleMedium">Group Details</Text>
             <List.Item 
               title="Bet Size" 
-              description={`$${mockGroup.betSize}`} 
+              description={`$${group.betAmount}`} 
               left={props => <List.Icon {...props} icon="cash" />}
             />
             <List.Item 
               title="Frequency" 
-              description={mockGroup.frequency} 
+              description={group.frequency || 'N/A'} 
               left={props => <List.Icon {...props} icon="calendar" />}
             />
             <List.Item 
               title="Lock-in Time" 
-              description={mockGroup.lockInTime} 
+              description={group.lockInTime || 'N/A'} 
               left={props => <List.Icon {...props} icon="clock" />}
             />
           </View>
 
           <View style={{ marginTop: 16 }}>
-            <Text variant="titleMedium">Members ({mockGroup.currentMembers}/{mockGroup.maxMembers})</Text>
-            {mockGroup.members.map((member, index) => (
-              <List.Item
-                key={index}
-                title={member.name}
-                description={`${member.wins}W - ${member.losses}L`}
-                left={props => <List.Icon {...props} icon="account" />}
-                right={() => member.role === 'admin' && (
-                  <Chip mode="outlined">Admin</Chip>
-                )}
-              />
-            ))}
+            <Text variant="titleMedium">Members ({group.memberCount}/{group.maxMembers})</Text>
+            <ScrollView style={{ maxHeight: 200 }}>
+              {group.members?.map((member, index) => (
+                <List.Item
+                  key={index}
+                  title={member.name}
+                  description={`${member.wins}W - ${member.losses}L`}
+                  left={props => <List.Icon {...props} icon="account" />}
+                  right={() => member.role === 'admin' && (
+                    <Chip mode="outlined">Admin</Chip>
+                  )}
+                />
+              ))}
+            </ScrollView>
           </View>
         </Surface>
       </ScrollView>
