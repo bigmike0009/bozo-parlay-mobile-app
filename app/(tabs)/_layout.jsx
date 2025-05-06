@@ -32,10 +32,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="groupfinder"
+        name="profile"
         options={{
-          title: 'Find Groups',
-          tabBarIcon: ({ color }) => <FontAwesome name="search" size={24} color={color} />,
+          title: 'You',
+          tabBarIcon: ({ color }) => <FontAwesome name="user" size={24} color={color} />,
         }}
       />
     </Tabs>
