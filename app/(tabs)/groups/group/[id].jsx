@@ -1,6 +1,6 @@
 import { useLocalSearchParams, Stack, useRouter } from 'expo-router';
 import { ScrollView, View } from 'react-native';
-import { Card, Text, Button, Avatar, Chip, List, Surface, useTheme } from 'react-native-paper';
+import { Card, Text, Button, Avatar, Chip, List, Surface, useTheme, IconButton } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { mockGroups } from '../../../mockData/mock';
 
@@ -45,12 +45,12 @@ export default function GroupDetail() {
                 style={{ marginBottom: 8 }}>
                 View/Edit Parlay Picks
               </Button>
-              <Button 
-                mode="outlined" 
-                onPress={() => router.push(`/groups/group/make/make-pick?id=${id}`)} 
-                style={{ marginBottom: 8 }}>
-                Make Pick
-              </Button>
+              <IconButton 
+                icon="message" 
+                size={24} 
+                onPress={() => router.push(`/groups/group/chat?id=${id}`)} 
+                style={{ marginBottom: 8 }}
+              />
             </View>
           ) : (
             <Button 

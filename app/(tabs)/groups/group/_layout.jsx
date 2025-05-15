@@ -11,6 +11,7 @@ export default function GroupLayout() {
       <Stack.Screen name="create" options={{ title: 'Create Group' }} />
       <Stack.Screen name="parlay/parlay-picks" options={{ title: 'Parlay Picks', headerBackTitle: 'Back to Group' }} />
       <Stack.Screen name="make/make-pick" options={{ title: 'Make Pick', headerBackTitle: 'Back to Group' }} />
+      <Stack.Screen name="chat" options={{ title: 'Group Chat' }} />
     </Stack>
   );
 }

@@ -67,3 +67,27 @@ export const mockGroups = [
     ],
   },
 ];
+
+export const mockChatMessages = [
+  {
+    id: '1',
+    sender: 'JohnDoe',
+    text: 'Hey everyone, ready for the next parlay?',
+    timestamp: '2025-05-14T10:00:00Z',
+    isCurrentUser: false,
+  },
+  {
+    id: '2',
+    sender: 'JaneSmith',
+    text: 'Absolutely! I have my pick ready.',
+    timestamp: '2025-05-14T10:05:00Z',
+    isCurrentUser: true,
+  },
+  {
+    id: '3',
+    sender: 'JohnDoe',
+    text: 'Great! Let’s make this one count.',
+    timestamp: '2025-05-14T10:10:00Z',
+    isCurrentUser: false,
+  },
+];
