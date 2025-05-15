@@ -1,7 +1,11 @@
 import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { Appbar } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 
 export default function TabLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -29,6 +33,13 @@ export default function TabLayout() {
         options={{
           title: 'My Groups',
           tabBarIcon: ({ color }) => <FontAwesome name="users" size={24} color={color} />,
+          headerRight: () => (
+            <Appbar.Action
+              icon="plus"
+              onPress={() => router.push('/groups/group/create')}
+              accessibilityLabel="Create Group"
+            />
+          ),
         }}
       />
       <Tabs.Screen
