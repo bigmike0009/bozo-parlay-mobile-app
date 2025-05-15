@@ -1,0 +1,299 @@
+
+
+# 📄 Product Requirements Document (PRD)
+
+## Product Name: **Bozo Game Groups**
+
+## Author: Michael Allen
+
+## Date: *\[May 2025]*
+
+---
+
+## 1. 📌 Objective
+
+Enable users to create and join private or public betting groups that engage in a cyclical parlay-based game called the **Bozo Game**, where each member contributes a pick, and failed group parlays result in a humorous penalty and responsibility system.
+
+---
+
+## 2. 📈 Goals & Success Metrics
+
+### 🎯 Primary Goals
+
+* Allow users to join/create groups with recurring betting cycles.
+* Each group member contributes one pick to a **group parlay**.
+* After a failed parlay, members vote to assign the title of “Bozo” to the most egregious pick contributor.
+* Bozo becomes responsible for placing the next parlay.
+
+### ✅ Success Metrics
+
+* % of users who create or join at least one group.
+* % of cycles completed (all picks submitted).
+* Avg. engagement in group chat.
+* % of successfully submitted parlays.
+* Bozo voting participation rate.
+
+---
+
+## 3. 🧩 Core Features
+
+### 3.1. Group Creation & Settings
+
+* Custom group name, description, and sport(s)
+* Admin-defined cycle length (daily, weekly, custom) for mvp lets limit this to weekly
+    * cycle part 1: placing bets
+    * cycle part 2: tracking parlay
+    * cycle part 3: voting on bozo
+* Group type: Public or Private
+* Group Password: if Private
+* Allowed odds range (min/max)
+* Allowed markets (checkboxes by sports/ moneylines/ spreads / props / etc)
+* Allowed bet date (< 24 hours in the future/ end of the week/ etc)
+* Missing pick policy:
+
+  * Proceed without
+  * Admin picks
+  * Bozo picks
+  * Manually override
+
+---
+
+### 3.2. Betting Cycle Engine
+
+* Each group has active cycles with timestamps.
+* Each member contributes **one pick per cycle**.
+* Picks are consolidated into a **single parlay**.
+* When cycle ends or all picks submitted:
+
+  * Odds are verified
+  * Bozo (if current) confirms and places parlay
+* Failed parlays trigger **Bozo voting**
+
+---
+
+### 3.3. Bozo Voting
+
+* Triggered after a failed group parlay.
+* Members vote for who they believe caused the loss.
+* Cannot vote for self.
+* Voting closes when all votes in or timeout.
+* Bozo is displayed in group and tasked with placing next parlay.
+
+---
+
+### 3.4. Odds Monitoring
+
+* Odds are saved at pick time.
+* Odds compared to live values at parlay time.
+* Odds may also be compared in a backend process that is refreshing latest odds periodically.
+* If odds changed:
+
+  * Notify group via system chat
+  * Require reconfirmation or adjustment of affected picks
+
+---
+
+### 3.5. Integrations
+
+* **Future:** Deep links to sportsbooks (e.g., DraftKings, FanDuel) with event pre-fill if possible.
+* **Future:** Explore sportsbook API partnerships for in-app bet slip population.
+* Optional Venmo/CashApp linking:
+
+  * Enable group-level setting to allow peer payouts
+  * Use for reminders and pre-filled payment requests
+  * No funds handled in-app
+
+---
+
+## 4. 💻 UX & UI Requirements
+
+Bottom Tab Navigation driven. Stack Navigation indicated by decimal points
+
+### 4.3. Groups Tab
+
+* Toggle switch for view user groups screen/ search or create group screen
+* Links to: View Group Screen, Create Group Screen
+* Group Search should have smart filters for different group settings
+* User Groups screen lists all groups which user is a member of
+
+---
+
+### 4.31. View Group Screen
+
+* Group details: Name, admin(s), Bozo, current cycle status
+* Link to: Parlay screen, Chat, Admin settings
+* List of members with roles
+
+---
+
+### 4.31.1. Group Chat
+
+* Real-time group chat
+* System messages: picks confirmed, odds changed, Bozo assigned
+* Support mentions: `@bozo`, `@admin`
+
+---
+
+### 4.3.2. Admin Screen
+
+* Modify group settings
+* Trigger manual cycle start/end
+* Manage members
+* Choose default missing-pick policy
+
+---
+### 4.32. Create Group Screen
+similar to admin screen
+* Select group settings
+
+---
+
+### 4.31.2. Parlay Screen
+
+* List of current member picks (submitted/not)
+* For submitted picks:
+
+  * Team, line, odds, live-odds mismatch indicator
+* Call-to-action:
+
+  * “Make Pick” → link to Lines screen
+  * “Place Parlay” (if Bozo and ready)
+  * “Confirm Odds Change”
+* Tabs: Current Picks | Cycle History
+
+---
+
+### 4.2. Lines Tab
+
+* Displays available bets
+* Filter by group rules (sports, odds)
+* Selecting a line will prompt which group you would like to select this for
+
+---
+### 4.1. Home Screen
+
+* Displays events like a twitter feed, linking when possible:
+    -Bet is placed
+    -Bet misses
+    -Bet hits
+    -Parlay has been placed
+    -User joins group
+    -User leaves group
+    -App announcements
+    -A new bozo is picked
+    -**FUTURE** friend activity **events from friend groups**
+* Filter by users groups only or public
+
+---
+### 4.4. Profile Screen
+
+* Displays name
+* Displays profile picture
+* Displays groups
+* Displays active bets and bet history
+* Has a link to settings screen
+
+---
+### 4.41. Settings Screen
+
+*Notification preferences
+*Connected accounts (OAuth)
+*Privacy settings
+*Theme
+*Logout
+
+---
+
+
+## 5. 🔐 Backend & Data Models
+
+### Tables:
+
+#### `Groups`
+
+* groupID, name, adminIDs, settings (oddsLimit, cycleLength, missingPickPolicy, payoutMode)
+
+#### `GroupMembers`
+
+* userID, groupID, role (member/admin/bozo), joinedAt
+
+#### `Cycles`
+
+* cycleID, groupID, startTime, endTime, parlayStatus (pending/won/lost)
+* picks: \[{ userID, team, oddsAtSelection, confirmed }]
+
+#### `BozoVotes`
+
+* cycleID, voterID, votedID
+
+#### `OddsMonitor`
+
+* track original vs. live odds per pick
+
+---
+
+## 6. ⏱ Edge Case Handling
+
+### Missing Picks
+
+* Controlled by group policy
+* If not all picks are submitted:
+
+  * Proceed without
+  * Admin/Bozo chooses
+  * Manual override
+
+### Odds Change
+
+* Alert members if odds shift
+* Pick marked “needs confirmation”
+* Prevent parlay until resolved
+
+### Voting Ties
+
+* Use group setting: Admin tiebreak, Previous Bozo tiebreak, Random
+
+---
+
+## 7. 🔄 Flow: Bozo Game Lifecycle
+
+1. **Cycle starts**
+2. Members make picks
+3. Odds confirmed
+4. Bozo places parlay
+5. Parlay fails → vote on Bozo
+6. New Bozo selected → next cycle starts
+
+---
+
+## 8. 🔧 MVP Considerations
+
+* Skip in-app parlay placement → link to sportsbook
+* Manual payout handling with reminders only (no actual transactions)
+* Focus on 1–2 major sportsbooks for links
+* Max group size: 10–20 for simplicity
+* No group discovery/search in MVP
+
+---
+
+## 9. ⚙️ Technical Considerations
+
+* Use polling or WebSockets for real-time updates (chat, odds)
+* Scheduled Lambda to end/start cycles
+* Integrate with a sports data API (e.g., TheOddsAPI, Betfair) for live odds
+* Use DynamoDB TTL for expiring old cycles and votes
+
+---
+
+## 10. 🛠 Future Enhancements
+
+* Multi-parlay group formats
+* Reputation/ranking system for Bozos
+* Web version of group interface
+* NFT or digital badge for the Bozo
+* Stats dashboard for each group
+* Public leaderboards
+
+---
+
+Let me know if you'd like this broken into a formal spec doc in Markdown, PDF, or if you want visual wireframes/mockups next.
